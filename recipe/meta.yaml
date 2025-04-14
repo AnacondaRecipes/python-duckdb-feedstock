@@ -9,7 +9,7 @@ source:
   url: https://github.com/duckdb/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 481a05d59cb8eaf4d78e5495ab0c99ed53e3b41e84aeaf24eef4144f2c60d1cc
   patches:
-    - 0001-fix-arrowfs-skip-arrow-fs-test-on-windows.patch
+    - 0001-fix-arrowfs-skip-arrow-fs-test-on-windows.patch  # [win]
 
 build:
   number: 0
@@ -23,11 +23,11 @@ outputs:
     script: build-duckdb.bat  # [win]
     requirements:
       build:
-        - patch                                  # [unix]
         - m2-patch                                # [win]
         - python                                 # [build_platform != target_platform]
         - cross-python_{{ target_platform }}     # [build_platform != target_platform]
         - pybind11 >=2.6                         # [build_platform != target_platform]
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
       host:
@@ -35,7 +35,7 @@ outputs:
         - python
         - pip
         - setuptools
-        - setuptools_scm <7
+        - setuptools_scm >=6.4
       run:
         - python
 
