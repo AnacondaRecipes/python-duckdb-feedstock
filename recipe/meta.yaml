@@ -9,8 +9,6 @@ source:
   # The GitHub source is broken for v1.4.3
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: fea43e03604c713e25a25211ada87d30cd2a044d8f27afab5deba26ac49e5268
-  patches:
-    - 0001-fix-arrowfs-skip-arrow-fs-test-on-windows.patch  # [win]
 
 build:
   number: 0
