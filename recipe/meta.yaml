@@ -14,7 +14,8 @@ build:
   number: 0
   skip: true  # [py<39]
   script:
-    - unset SETUPTOOLS_SCM_PRETEND_VERSION
+    - unset SETUPTOOLS_SCM_PRETEND_VERSION  # [unix]
+    - set SETUPTOOLS_SCM_PRETEND_VERSION=  # [win]
 
 outputs:
   - name: python-{{ name|lower }}
