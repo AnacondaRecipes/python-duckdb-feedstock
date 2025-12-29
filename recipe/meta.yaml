@@ -1,21 +1,18 @@
 {% set name = "duckdb" %}
-{% set version = "1.2.1" %}
+{% set version = "1.4.3" %}
 
 package:
   name: python-{{ name|lower }}-split
   version: {{ version }}
 
 source:
-  url: https://github.com/duckdb/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 481a05d59cb8eaf4d78e5495ab0c99ed53e3b41e84aeaf24eef4144f2c60d1cc
-  patches:
-    - 0001-fix-arrowfs-skip-arrow-fs-test-on-windows.patch  # [win]
+  # The GitHub source is broken for v1.4.3
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fea43e03604c713e25a25211ada87d30cd2a044d8f27afab5deba26ac49e5268
 
 build:
   number: 0
-  script_env:
-    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-    - JEMALLOC_SYS_WITH_LG_PAGE=16   # [aarch64 or ppc64le]
+  skip: true  # [py<39]
 
 outputs:
   - name: python-{{ name|lower }}
@@ -23,42 +20,41 @@ outputs:
     script: build-duckdb.bat  # [win]
     requirements:
       build:
-        - m2-patch                                # [win]
-        - python                                 # [build_platform != target_platform]
-        - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-        - pybind11 >=2.6                         # [build_platform != target_platform]
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
+      - {{ stdlib('c') }}
+      - {{ compiler('c') }}
+      - {{ compiler('cxx') }}
+      - cmake
+      - ninja
       host:
-        - pybind11 >=2.6
         - python
         - pip
+        - pybind11 >=2.6.0
+        - scikit-build-core >=0.11.4
         - setuptools
-        - setuptools_scm >=6.4
+        - setuptools_scm >=8.0
       run:
         - python
-
     test:
       imports:
         - duckdb
       requires:
         - pip
-        - pytest
-        - mypy
-        - fsspec
-        - google-cloud-storage
-        - pandas
-        # Remove again
-        - pytest <8
-      source_files:
-        - tools/pythonpkg/tests
+        # Enable the test suite when the github source is fixed
+        # - pytest
+        # - mypy
+        # - fsspec
+        # - google-cloud-storage
+        # - pandas
+      # source_files:
+      #   - tools/pythonpkg/tests
       commands:
         - pip check
-        # Ensure we output UTF-8 on windows
-        - set PYTHONIOENCODING=utf-8  # [win]
-        # ppc64le/aarch64 is emulated and fails to run the test suite here
-        # Skip slow tests to avoid memory issues in CI, skip stub tests that is fragile under new version of mypy
-        - pytest -sv tools/pythonpkg/tests --ignore=tools/pythonpkg/tests/slow/ --ignore=tools/pythonpkg/tests/stubs/  # [not (ppc64le or aarch64)]
+        # # Ensure we output UTF-8 on windows
+        # - set PYTHONIOENCODING=utf-8  # [win]
+        # # aarch64 is emulated and fails to run the test suite here
+        # # Skip slow tests to avoid memory issues in CI, skip stub tests that is fragile under new version of mypy
+        # - pytest -sv tools/pythonpkg/tests --ignore=tools/pythonpkg/tests/slow/ --ignore=tools/pythonpkg/tests/stubs/  # [not (ppc64le or aarch64)]
+  
   - name: {{ name|lower }}
     build:
       noarch: generic
@@ -69,7 +65,6 @@ outputs:
     test:
       imports:
         - duckdb
-
 
 about:
   home: https://www.duckdb.org/
@@ -82,7 +77,7 @@ about:
     fast while embedded in another process. It is designed to be easy to
     install and easy to use.
   doc_url: https://duckdb.org/docs/index.html
-  dev_url: https://github.com/duckdb/duckdb
+  dev_url: https://github.com/duckdb/duckdb-python
 
 extra:
   recipe-maintainers:
