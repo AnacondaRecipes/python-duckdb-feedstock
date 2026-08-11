@@ -1,5 +1,5 @@
 {% set name = "duckdb" %}
-{% set version = "1.4.3" %}
+{% set version = "1.5.5" %}
 
 package:
   name: python-{{ name|lower }}-split
@@ -8,7 +8,7 @@ package:
 source:
   # The GitHub source is broken for v1.4.3
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: fea43e03604c713e25a25211ada87d30cd2a044d8f27afab5deba26ac49e5268
+  sha256: 72f33ee57ca7595b23957671a2cc7f7fe2be0ecc2d68f63abedcfcaa3a5c1238
 
 build:
   number: 0
@@ -20,11 +20,11 @@ outputs:
     script: build-duckdb.bat  # [win]
     requirements:
       build:
-      - {{ stdlib('c') }}
-      - {{ compiler('c') }}
-      - {{ compiler('cxx') }}
-      - cmake
-      - ninja
+        - {{ stdlib('c') }}
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - ninja
       host:
         - python
         - pip
@@ -54,7 +54,6 @@ outputs:
         # # aarch64 is emulated and fails to run the test suite here
         # # Skip slow tests to avoid memory issues in CI, skip stub tests that is fragile under new version of mypy
         # - pytest -sv tools/pythonpkg/tests --ignore=tools/pythonpkg/tests/slow/ --ignore=tools/pythonpkg/tests/stubs/  # [not (ppc64le or aarch64)]
-  
   - name: {{ name|lower }}
     build:
       noarch: generic
@@ -62,9 +61,16 @@ outputs:
     requirements:
       run:
         - {{ pin_subpackage('python-duckdb', max_pin="x.x.x") }}
+        - python
+      host:
+        - python
     test:
       imports:
         - duckdb
+      commands:
+        - pip check
+      requires:
+        - pip
 
 about:
   home: https://www.duckdb.org/
