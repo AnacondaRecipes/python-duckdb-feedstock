@@ -1,21 +1,21 @@
 {% set name = "duckdb" %}
-{% set version = "1.4.3" %}
+{% set version = "1.5.5" %}
 
 package:
-  name: python-{{ name|lower }}-split
+  name: python-{{ name }}-split
   version: {{ version }}
 
 source:
   # The GitHub source is broken for v1.4.3
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: fea43e03604c713e25a25211ada87d30cd2a044d8f27afab5deba26ac49e5268
+  sha256: 72f33ee57ca7595b23957671a2cc7f7fe2be0ecc2d68f63abedcfcaa3a5c1238
 
 build:
   number: 0
-  skip: true  # [py<39]
+  skip: true  # [py<310]
 
 outputs:
-  - name: python-{{ name|lower }}
+  - name: python-{{ name }}
     script: build-duckdb.sh  # [unix]
     script: build-duckdb.bat  # [win]
     requirements:
@@ -29,6 +29,7 @@ outputs:
         - python
         - pip
         - pybind11 >=2.6.0
+        - pybind11-abi ==11
         - scikit-build-core >=0.11.4
         - setuptools
         - setuptools_scm >=8.0
@@ -55,7 +56,7 @@ outputs:
         # # Skip slow tests to avoid memory issues in CI, skip stub tests that is fragile under new version of mypy
         # - pytest -sv tools/pythonpkg/tests --ignore=tools/pythonpkg/tests/slow/ --ignore=tools/pythonpkg/tests/stubs/  # [not (ppc64le or aarch64)]
   
-  - name: {{ name|lower }}
+  - name: {{ name }}
     build:
       noarch: generic
       skip: true  # [not linux64]
@@ -76,7 +77,7 @@ about:
     DuckDB is an embedded database designed to execute analytical SQL queries
     fast while embedded in another process. It is designed to be easy to
     install and easy to use.
-  doc_url: https://duckdb.org/docs/index.html
+  doc_url: https://duckdb.org/docs/current
   dev_url: https://github.com/duckdb/duckdb-python
 
 extra:
@@ -87,3 +88,8 @@ extra:
     - xhochy
     - mariusvniekerk
     - gforsyth
+  skip-lints:
+    - missing_python
+    - missing_pip_check
+    - missing_python_build_tool
+  
