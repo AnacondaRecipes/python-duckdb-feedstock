@@ -1,8 +1,8 @@
 {% set name = "duckdb" %}
-{% set version = "1.4.3" %}
+{% set version = "1.5.5" %}
 
 package:
-  name: python-{{ name|lower }}-split
+  name: python-{{ name }}-split
   version: {{ version }}
 
 source:
@@ -12,10 +12,10 @@ source:
 
 build:
   number: 0
-  skip: true  # [py<39]
+  skip: true  # [py<310]
 
 outputs:
-  - name: python-{{ name|lower }}
+  - name: python-{{ name }}
     script: build-duckdb.sh  # [unix]
     script: build-duckdb.bat  # [win]
     requirements:
@@ -55,7 +55,7 @@ outputs:
         # # Skip slow tests to avoid memory issues in CI, skip stub tests that is fragile under new version of mypy
         # - pytest -sv tools/pythonpkg/tests --ignore=tools/pythonpkg/tests/slow/ --ignore=tools/pythonpkg/tests/stubs/  # [not (ppc64le or aarch64)]
   
-  - name: {{ name|lower }}
+  - name: {{ name }}
     build:
       noarch: generic
       skip: true  # [not linux64]
